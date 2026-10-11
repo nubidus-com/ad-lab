@@ -1,5 +1,5 @@
 ---
-- name: frostylabs.local Workstation configuration
+- name: vaultshields.local Workstation configuration
   hosts: win_client01
   roles:
     - commonwkstn

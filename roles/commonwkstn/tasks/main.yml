@@ -16,41 +16,17 @@
   args:
     executable: powershell.exe
 
-- name: "[{{ client_hostname }}] Install xRemoteDesktopAdmin module"
-  win_shell: |
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    if (!(Get-Module -ListAvailable -Name xRemoteDesktopAdmin)) {
-      Install-Module -Name xRemoteDesktopAdmin -Force -SkipPublisherCheck
-    }
-  args:
-    executable: powershell.exe
-
 - name: "[{{ client_hostname }}] Enable Remote Desktop"
-  win_dsc:
-    resource_name: xRemoteDesktopAdmin
-    Ensure: present
-    UserAuthentication: Secure
-
-- name: "[{{ client_hostname }}] Install xNetworking module"
   win_shell: |
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    if (!(Get-Module -ListAvailable -Name xNetworking)) {
-      Install-Module -Name xNetworking -Force -SkipPublisherCheck
-    }
+    Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name fDenyTSConnections -Value 0
+    Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name UserAuthentication -Value 1
   args:
     executable: powershell.exe
 
-- name: "[{{ client_hostname }}] Configure firewall for RDP"
-  win_dsc:
-    resource_name: xFirewall
-    Name: "Administrator access for RDP (TCP-In)"
-    Ensure: present
-    Enabled: True
-    Profile: "Domain"
-    Direction: "Inbound"
-    Localport: "3389"
-    Protocol: "TCP"
-    Description: "Opens the listener port for RDP"
+- name: "[{{ client_hostname }}] Allow RDP through Firewall"
+  win_shell: 'netsh advfirewall firewall set rule group="remote desktop" new enable=Yes'
+  args:
+    executable: powershell.exe
 
 - name: "[{{ client_hostname }}] Set hostname"
   win_hostname:

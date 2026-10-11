@@ -1,8 +1,8 @@
 ---
-- name: frostylabs.local Member Server configuration
+- name: vaultshields.local Member Server configuration
   hosts: win_srv01
   gather_facts: yes
   roles:
     - common
     - member_server
-    - mssql
+    # - mssql  # no SQL Server build for ARM Windows

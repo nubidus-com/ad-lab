@@ -2,17 +2,17 @@
 # Global variables for the entire lab environment
 
 # Domain configuration
-domain: frostylabs.local
-domain_netbios: FROSTYLABS
-domain_dn: dc=frostylabs,dc=local
-domain_dn_upper: dc=FROSTYLABS,dc=local
+domain: vaultshields.local
+domain_netbios: VAULTSHIELDS
+domain_dn: dc=vaultshields,dc=local
+domain_dn_upper: dc=VAULTSHIELDS,dc=local
 
 # IP addresses referenced by multiple hosts
-dc_ip: 192.168.139.10
-srv01_ip: 192.168.139.11
-srv02_ip: 192.168.139.12
-client_ip: 192.168.139.13
-linux_srv01_ip: 192.168.139.14
+dc_ip: 192.168.56.10
+srv01_ip: 192.168.56.11
+srv02_ip: 192.168.56.12
+client_ip: 192.168.56.13
+linux_srv01_ip: 192.168.56.14
 
 # DNS Configuration
 dns_forwarders:
@@ -31,15 +31,15 @@ vagrant_pass: vagrant
 
 # User accounts
 domain_admin_user: Administrator
-domain_admin_user_fqn: "Administrator@frostylabs.local"
+domain_admin_user_fqn: "Administrator@vaultshields.local"
 admin_user: admin
 bob_user: bob
 alice_user: alice
 
 # Active Directory Organizational Units
-users_ou: cn=Users,dc=FROSTYLABS,dc=local
-users_ou_lower: cn=Users,dc=frostylabs,dc=local
-base_ou: DC=frostylabs,DC=local
+users_ou: cn=Users,dc=VAULTSHIELDS,dc=local
+users_ou_lower: cn=Users,dc=vaultshields,dc=local
+base_ou: DC=vaultshields,DC=local
 
 # AD Groups
 ad_groups:
@@ -60,12 +60,12 @@ win_domain_log_path: C:\ansible_win_domain_controller.txt
 chocolatey_version: 1.4.0
 
 # LAMP server configuration
-web_domain_name: frostylabs
-web_root_path: /var/www/frostylabs
+web_domain_name: vaultshields
+web_root_path: /var/www/vaultshields
 web_user: www-data
 web_group: www-data
 apache_sites_available: /etc/apache2/sites-available
 
 # Linux server configuration
-timezone: Europe/Rome
+timezone: Europe/Warsaw
 apt_repository: multiverse

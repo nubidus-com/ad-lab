@@ -31,8 +31,8 @@ This lab environment provisions and configures:
 - **Windows Client** (win-client01): Windows 10 workstation
 - **Linux Server** (linux-srv01): Ubuntu 24.04 with LAMP stack and domain integration
 
-**Domain Name**: `frostylabs.local`
-**Domain NetBIOS**: `FROSTYLABS`
+**Domain Name**: `vaultshields.local`
+**Domain NetBIOS**: `VAULTSHIELDS`
 
 ---
 
@@ -40,8 +40,8 @@ This lab environment provisions and configures:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    frostylabs.local Domain                   │
-│                   Network: 192.168.139.0/24                  │
+│                    vaultshields.local Domain                   │
+│                   Network: 192.168.56.0/24                  │
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
@@ -158,37 +158,42 @@ The Vagrantfile configures a shared folder between your host and guest VMs:
 
 ### Virtual Machines
 
+**Update - 2026 - **
+ISO for winserver on mac m1 : 26212.5000.240503-1218.GE_PRERELEASE_SERVERSTANDARD_OEMRET_A64FRE_EN-US.ISO from https://archive.org/details/26212.5000.240503-1218-ge-prerelease-serverstandard-oemret-a-64-fre-en-us file : 
+ISO for client win11 from official windows website file Windows11_Client_arm64_en-us_26300_9457.iso 
+vagrant package --base build-lab-windows-11-arm64 --output boxes/windows-11-arm64.box 2>&1 | tail -4 && vagrant box add --force lab/windows-11-arm64 boxes/windows-11-arm64.box 2>&1 | tail -3; vagrant box list
+
 #### win-dc01 (Domain Controller)
 - **Box**: `StefanScherer/windows_2019`
-- **IP**: `192.168.139.10`
+- **IP**: `192.168.56.10`
 - **RDP Port**: `23389` (forwarded from 3389)
 - **WinRM Port**: `25985` (forwarded from 5985)
 - **Provisioning**: Configures WinRM for Ansible using `ConfigureRemotingForAnsible.ps1`
 
 #### win-srv01 (Member Server + SQL)
 - **Box**: `StefanScherer/windows_2019`
-- **IP**: `192.168.139.11`
+- **IP**: `192.168.56.11`
 - **RDP Port**: `33389`
 - **WinRM Port**: `35985`
 - **Provisioning**: WinRM configuration
 
 #### win-srv02 (Member Server)
 - **Box**: `StefanScherer/windows_2019`
-- **IP**: `192.168.139.12`
+- **IP**: `192.168.56.12`
 - **RDP Port**: `43389`
 - **WinRM Port**: `45985`
 - **Provisioning**: WinRM configuration
 
 #### win-client01 (Workstation)
 - **Box**: `StefanScherer/windows_10`
-- **IP**: `192.168.139.13`
+- **IP**: `192.168.56.13`
 - **RDP Port**: `53389`
 - **WinRM Port**: `55985`
 - **Provisioning**: WinRM configuration
 
 #### linux-srv01 (Linux Server)
 - **Box**: `bento/ubuntu-24.04`
-- **IP**: `192.168.139.14`
+- **IP**: `192.168.56.14`
 - **SSH Port**: `6222` (forwarded from 22)
 - **Shared Folder**: Disabled for Linux VM
 
@@ -221,7 +226,7 @@ These scripts configure static IP addresses on the VMs' `Ethernet1` interface:
 
 - Remove existing IP addresses and routes on Ethernet1
 - Set static IP address with /24 subnet
-- Configure default gateway (192.168.139.1)
+- Configure default gateway (192.168.56.1)
 - Set DNS servers
 
 **Usage**: Run from within the VM or from Shared-Folder:
@@ -374,7 +379,7 @@ Configures the domain controller.
 **Key tasks**:
 - Install Chocolatey and common packages
 - Set hostname and reboot if needed
-- Create AD domain `frostylabs.local`
+- Create AD domain `vaultshields.local`
 - Promote to domain controller
 - Configure DNS forwarders
 - Create domain users (admin, bob, alice)
@@ -479,7 +484,7 @@ Configures Ubuntu Linux server with AD integration.
 **Dependencies**: Requires `common` role.
 
 **Key tasks**:
-1. Create AD domain `frostylabs.local`
+1. Create AD domain `vaultshields.local`
 2. Promote server to domain controller
 3. Configure DNS forwarders (8.8.8.8, 8.8.4.4)
 4. Create domain users:
@@ -508,7 +513,7 @@ Configures Ubuntu Linux server with AD integration.
 4. Install IIS management tools
 5. Configure ACLs for machine keys
 6. Create public share (`C:\shares\public`)
-7. Join domain `frostylabs.local`
+7. Join domain `vaultshields.local`
 8. Reboot after domain join
 
 #### mssql
@@ -546,7 +551,7 @@ Configures Ubuntu Linux server with AD integration.
 - Install SSSD (System Security Services Daemon)
 - Install Kerberos client
 - Configure SSSD for AD authentication
-- Join server to `frostylabs.local` domain
+- Join server to `vaultshields.local` domain
 - Enable home directory creation for AD users
 - Configure PAM for AD authentication
 
@@ -558,8 +563,8 @@ Configures Ubuntu Linux server with AD integration.
 - Install Apache2 web server
 - Install MySQL/MariaDB database
 - Install PHP and modules
-- Create virtual host for `frostylabs`
-- Configure web root at `/var/www/frostylabs`
+- Create virtual host for `vaultshields`
+- Configure web root at `/var/www/vaultshields`
 - Set proper permissions for web content
 - Enable Apache modules (rewrite, ssl, etc.)
 
@@ -571,11 +576,11 @@ Configures Ubuntu Linux server with AD integration.
 
 | Hostname      | IP Address      | Role                        | OS               |
 |---------------|-----------------|----------------------------|------------------|
-| win-dc01      | 192.168.139.10  | Domain Controller + DNS    | Windows Server 2019 |
-| win-srv01     | 192.168.139.11  | Member Server + SQL        | Windows Server 2019 |
-| win-srv02     | 192.168.139.12  | Member Server + File/IIS   | Windows Server 2019 |
-| win-client01  | 192.168.139.13  | Workstation                | Windows 10       |
-| linux-srv01   | 192.168.139.14  | LAMP Server + SSSD         | Ubuntu 24.04     |
+| win-dc01      | 192.168.56.10  | Domain Controller + DNS    | Windows Server 2019 |
+| win-srv01     | 192.168.56.11  | Member Server + SQL        | Windows Server 2019 |
+| win-srv02     | 192.168.56.12  | Member Server + File/IIS   | Windows Server 2019 |
+| win-client01  | 192.168.56.13  | Workstation                | Windows 10       |
+| linux-srv01   | 192.168.56.14  | LAMP Server + SSSD         | Ubuntu 24.04     |
 
 ### Port Forwarding
 
@@ -596,10 +601,10 @@ Configures Ubuntu Linux server with AD integration.
 
 ### Network Services
 
-- **DNS Server**: win-dc01 (192.168.139.10)
-- **Domain Controller**: win-dc01 (192.168.139.10)
-- **SQL Server**: win-srv01 (192.168.139.11)
-- **Web Server**: linux-srv01 (192.168.139.14)
+- **DNS Server**: win-dc01 (192.168.56.10)
+- **Domain Controller**: win-dc01 (192.168.56.10)
+- **SQL Server**: win-srv01 (192.168.56.11)
+- **Web Server**: linux-srv01 (192.168.56.14)
 
 ---
 
@@ -620,7 +625,7 @@ mstsc /v:localhost:53389    # Client 01
 Or use any RDP client:
 - **Host**: `localhost`
 - **Port**: See port forwarding table above
-- **Username**: `vagrant` or `Administrator@frostylabs.local`
+- **Username**: `vagrant` or `Administrator@vaultshields.local`
 - **Password**: `vagrant` or `StrongPass123!`
 
 #### SSH to Linux VM
@@ -791,12 +796,12 @@ pip install --upgrade pywinrm
 
 **Domain join fails**:
 - Ensure the domain controller (win-dc01) is fully configured first
-- Verify DNS is pointing to the DC (192.168.139.10)
+- Verify DNS is pointing to the DC (192.168.56.10)
 - Check domain credentials in group_vars
 - Wait a few minutes after DC promotion before joining members
 
 **DNS resolution issues**:
-- Verify DNS server on each VM points to 192.168.139.10
+- Verify DNS server on each VM points to 192.168.56.10
 - Use the IP configuration scripts to set DNS
 - Check DNS forwarders are configured on DC
 
@@ -806,7 +811,7 @@ pip install --upgrade pywinrm
 w32tm /resync
 
 # On Linux VMs
-sudo ntpdate -u 192.168.139.10
+sudo ntpdate -u 192.168.56.10
 ```
 
 ### SQL Server Issues

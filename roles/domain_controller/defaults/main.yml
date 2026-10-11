@@ -1,4 +1,47 @@
-# default user for using become: runas method
-# used for installing Powershell 5.0 in this role.
-ansible_become_password: vagrant
-ansible_become_user: vagrant
+---
+# Directory content seeded by tasks/directory.yml
+directory_base_dn: "{{ base_ou }}"
+directory_user_password: password123
+directory_groups_ou: Groups
+directory_people_ou: People
+
+# Department OUs, created under People
+directory_departments:
+  - IT
+  - Engineering
+  - Database
+  - Messaging
+  - HR
+  - Finance
+  - Sales
+  - Support
+
+# Admin groups (members: DC admins also get Domain Admins)
+directory_groups:
+  - { name: DC Admins, description: Domain controller administrators }
+  - { name: SQL Server Admins, description: SQL Server administrators }
+  - { name: Web Server Admins, description: Web server administrators }
+  - { name: Linux Admins, description: Linux server administrators }
+  - { name: Mail Server Admins, description: Mail server administrators }
+
+directory_users:
+  - { sam: jsmith, first: John, last: Smith, ou: IT, groups: [DC Admins] }
+  - { sam: mjohnson, first: Mary, last: Johnson, ou: IT, groups: [DC Admins] }
+  - { sam: dwilliams, first: David, last: Williams, ou: IT, groups: [DC Admins] }
+  - { sam: sbrown, first: Sarah, last: Brown, ou: IT, groups: [DC Admins] }
+  - { sam: rjones, first: Robert, last: Jones, ou: Engineering, groups: [Web Server Admins] }
+  - { sam: ldavis, first: Linda, last: Davis, ou: Engineering, groups: [Linux Admins] }
+  - { sam: mmiller, first: Michael, last: Miller, ou: Engineering, groups: [Linux Admins] }
+  - { sam: jwilson, first: Jennifer, last: Wilson, ou: Engineering, groups: [Web Server Admins] }
+  - { sam: cmoore, first: Charles, last: Moore, ou: Database, groups: [SQL Server Admins] }
+  - { sam: ptaylor, first: Patricia, last: Taylor, ou: Database, groups: [SQL Server Admins] }
+  - { sam: tanderson, first: Thomas, last: Anderson, ou: Messaging, groups: [Mail Server Admins] }
+  - { sam: bthomas, first: Barbara, last: Thomas, ou: Messaging, groups: [Mail Server Admins] }
+  - { sam: jjackson, first: Joseph, last: Jackson, ou: HR, groups: [] }
+  - { sam: lwhite, first: Lisa, last: White, ou: HR, groups: [] }
+  - { sam: dharris, first: Daniel, last: Harris, ou: Finance, groups: [] }
+  - { sam: nmartin, first: Nancy, last: Martin, ou: Finance, groups: [] }
+  - { sam: mthompson, first: Mark, last: Thompson, ou: Sales, groups: [] }
+  - { sam: kgarcia, first: Karen, last: Garcia, ou: Sales, groups: [] }
+  - { sam: pmartinez, first: Paul, last: Martinez, ou: Sales, groups: [] }
+  - { sam: srobinson, first: Susan, last: Robinson, ou: Support, groups: [] }

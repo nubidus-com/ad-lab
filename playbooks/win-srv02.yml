@@ -1,5 +1,5 @@
 ---
-- name: frostylabs.local Member Server configuration
+- name: vaultshields.local Member Server configuration
   hosts: win_srv02
   gather_facts: yes
   roles:

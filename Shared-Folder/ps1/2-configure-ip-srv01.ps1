@@ -1,29 +1,26 @@
+# Host-only adapter = the one that is not the NAT adapter (10.0.2.x)
+$natIf = (Get-NetIPAddress -AddressFamily IPv4 -IPAddress "10.0.2.*" -ErrorAction SilentlyContinue).InterfaceIndex
+$ifAlias = (Get-NetAdapter -Physical | Where-Object { $_.InterfaceIndex -ne $natIf } | Select-Object -First 1).Name
+
 # Execute privileged
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Start-Process powershell.exe "-ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
     exit
 }
 
-# Clear old IPv4 addresses on Ethernet1
-$oldIPs = Get-NetIPAddress -InterfaceAlias "Ethernet1" -AddressFamily IPv4 -ErrorAction SilentlyContinue
+# Clear old IPv4 addresses on host-only adapter
+$oldIPs = Get-NetIPAddress -InterfaceAlias $ifAlias -AddressFamily IPv4 -ErrorAction SilentlyContinue
 if ($oldIPs) {
     $oldIPs | Remove-NetIPAddress -Confirm:$false
 }
 
-# Clear existing default routes (gateways) on Ethernet1
-$oldRoutes = Get-NetRoute -InterfaceAlias "Ethernet1" -DestinationPrefix "0.0.0.0/0" -ErrorAction SilentlyContinue
-if ($oldRoutes) {
-    $oldRoutes | Remove-NetRoute -Confirm:$false
-}
-
 # Apply new IP configuration
 New-NetIPAddress `
-    -InterfaceAlias "Ethernet1" `
-    -IPAddress "192.168.139.11" `
-    -PrefixLength 24 `
-    -DefaultGateway "192.168.139.1"
+    -InterfaceAlias $ifAlias `
+    -IPAddress "192.168.56.11" `
+    -PrefixLength 24
 
 # Set DNS servers (change/add as needed)
 Set-DnsClientServerAddress `
-    -InterfaceAlias "Ethernet1" `
-    -ServerAddresses @("192.168.139.10","1.1.1.1")
+    -InterfaceAlias $ifAlias `
+    -ServerAddresses @("192.168.56.10","1.1.1.1")

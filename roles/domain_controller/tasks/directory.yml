@@ -1,0 +1,70 @@
+- name: "[{{ dc_hostname }}] Relax password complexity so lab users can use simple passwords"
+  win_shell: |
+    Set-ADDefaultDomainPasswordPolicy -Identity {{ domain }} -ComplexityEnabled $false -MinPasswordLength 8 -PasswordHistoryCount 0 -MinPasswordAge 0
+
+- name: "[{{ dc_hostname }}] Create People and Groups OUs"
+  microsoft.ad.ou:
+    name: "{{ item }}"
+    path: "{{ directory_base_dn }}"
+    state: present
+  loop:
+    - "{{ directory_people_ou }}"
+    - "{{ directory_groups_ou }}"
+
+- name: "[{{ dc_hostname }}] Create department OUs"
+  microsoft.ad.ou:
+    name: "{{ item }}"
+    path: "OU={{ directory_people_ou }},{{ directory_base_dn }}"
+    state: present
+  loop: "{{ directory_departments }}"
+
+- name: "[{{ dc_hostname }}] Create admin groups"
+  microsoft.ad.group:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    scope: global
+    path: "OU={{ directory_groups_ou }},{{ directory_base_dn }}"
+    state: present
+  loop: "{{ directory_groups }}"
+
+- name: "[{{ dc_hostname }}] Create people"
+  microsoft.ad.user:
+    name: "{{ item.first }} {{ item.last }}"
+    sam_account_name: "{{ item.sam }}"
+    upn: "{{ item.sam }}@{{ domain }}"
+    firstname: "{{ item.first }}"
+    surname: "{{ item.last }}"
+    attributes:
+      set:
+        department: "{{ item.ou }}"
+    password: "{{ directory_user_password }}"
+    password_never_expires: yes
+    update_password: when_changed
+    state: present
+    path: "OU={{ item.ou }},OU={{ directory_people_ou }},{{ directory_base_dn }}"
+  loop: "{{ directory_users }}"
+  loop_control:
+    label: "{{ item.sam }}"
+
+- name: "[{{ dc_hostname }}] Add people to groups"
+  microsoft.ad.group:
+    name: "{{ item.1 }}"
+    scope: global
+    path: "OU={{ directory_groups_ou }},{{ directory_base_dn }}"
+    members:
+      add:
+        - "{{ item.0.sam }}"
+    state: present
+  loop: "{{ directory_users | subelements('groups') }}"
+  loop_control:
+    label: "{{ item.0.sam }} -> {{ item.1 }}"
+
+- name: "[{{ dc_hostname }}] DC Admins are Domain Admins"
+  microsoft.ad.group:
+    name: Domain Admins
+    scope: global
+    path: "CN=Users,{{ directory_base_dn }}"
+    members:
+      add:
+        - DC Admins
+    state: present

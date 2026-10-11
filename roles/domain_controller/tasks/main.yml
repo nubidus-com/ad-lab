@@ -129,3 +129,5 @@
     path: "{{ base_ou }}"
     state: present
   loop: "{{ ad_groups }}"
+
+- import_tasks: directory.yml

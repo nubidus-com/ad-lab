@@ -1,5 +1,5 @@
 ---
-- name: frostylabs.local Domain Controller configuration
+- name: vaultshields.local Domain Controller configuration
   hosts: win_dc01
   serial: 1
   roles:

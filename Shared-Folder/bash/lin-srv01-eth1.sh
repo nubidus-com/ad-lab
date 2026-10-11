@@ -7,13 +7,13 @@ network:
   ethernets:
     eth1:
       addresses:
-        - 192.168.139.14/24
+        - 192.168.56.14/24
       routes:
         - to: default
-          via: 192.168.139.1
+          via: 192.168.56.1
       nameservers:
         addresses:
-          - 192.168.139.10
+          - 192.168.56.10
 EOF
 
 sudo netplan apply
